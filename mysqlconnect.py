@@ -6,7 +6,10 @@ import os
 load_dotenv()
 
 # 연결 설정  
-conn = pymysql.connect(
+
+# MySQL 데이터베이스 연결 및 쿼리 실행 함수
+def execute_query(query):
+    conn = pymysql.connect(
         host=os.environ.get("Server_IP"),            # MySQL 서버 주소
         user=os.environ.get("MYSQL_USER"),           # MySQL 사용자 이름
         password=os.environ.get("MYSQL_PASSWORD"),   # MySQL 사용자 비밀번호
@@ -15,8 +18,6 @@ conn = pymysql.connect(
         port=3306                                    # 포트 번호
     )
 
-# MySQL 데이터베이스 연결 및 쿼리 실행 함수
-def execute_query(query):
     
     try:
         with conn.cursor() as cursor:
