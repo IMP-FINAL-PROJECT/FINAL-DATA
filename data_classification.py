@@ -16,3 +16,18 @@ def get_custom_date_and_category(timestamp, sunrise_today_time, sunset_today_tim
         return (current_date - timedelta(days=1)).strftime('%Y-%m-%d'), 'sunset'
     else:
         return current_date.strftime('%Y-%m-%d'), 'sunset'
+
+#개별 데이터 합산 및 처리 함수 
+def process_data_point(data, summary, custom_date, category):
+    illuminance_array = eval(data[2])
+    avg_illuminance = sum(illuminance_array) / len(illuminance_array) if illuminance_array else 0
+    gps_data_list = eval(data[6])
+
+    summary[custom_date][category]['count'] += 1
+    summary[custom_date]['gps']['gps'].extend(gps_data_list)
+    summary[custom_date]['gps']['confirm'].append(data[8])
+    summary[custom_date][category]['pedometer'] += data[3]
+    summary[custom_date][category]['screen_frequency'] += data[4]
+    summary[custom_date][category]['screen_duration'] += data[5]
+    if sum(illuminance_array) > 0:
+        summary[custom_date][category]['illuminance_sum'] += avg_illuminance
