@@ -5,6 +5,7 @@ from excel_data_loader import get_sunrise_sunset, round_up_time
 from gps_data_map import create_and_save_map
 from collections import defaultdict
 from gps_data_clustering import perform_dbscan_clustering
+import field_mappings
 
 
 def classify_and_summarize_data(sensor_data_list):
@@ -17,7 +18,7 @@ def classify_and_summarize_data(sensor_data_list):
 
     for id, data_list in data_by_id.items():
         for data in data_list:
-            current_date = data[7]
+            current_date = data[field_mappings.SENSOR_TIMESTAMP_INDEX]
             sunrise_today, sunset_today = get_sunrise_sunset(current_date.strftime('%m%d'))
             if sunrise_today != "No data available for the given date." and sunset_today != "No data available for the given date.":
                 rounded_sunrise_today = round_up_time(sunrise_today)
@@ -25,7 +26,7 @@ def classify_and_summarize_data(sensor_data_list):
                 sunrise_today_time = datetime.combine(current_date, time(rounded_sunrise_today, 0))
                 sunset_today_time = datetime.combine(current_date, time(rounded_sunset_today, 0))
                 
-                timestamp = datetime.combine(data[7], time(data[8]))
+                timestamp = datetime.combine(data[field_mappings.SENSOR_TIMESTAMP_INDEX], time(data[field_mappings.SENSOR_HOUR_INDEX]))
                 custom_date, category = get_custom_date_and_category(timestamp, sunrise_today_time, sunset_today_time, current_date)
                 process_data_point(data, summary[id], custom_date, category)
                 
