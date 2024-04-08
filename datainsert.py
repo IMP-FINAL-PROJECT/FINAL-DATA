@@ -1,5 +1,6 @@
 import mysqlconnect
-import json
+from datetime import datetime
+
 def insert_dailylifepattern_data(data):
     """
     주어진 start_num을 기준으로 sensor 테이블에서 모든 레코드를 가져오는 함수
@@ -53,3 +54,22 @@ def insert_dailylifepattern_data(data):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     mysqlconnect.executemany_query(insert_query,values_to_insert)
+
+
+
+
+
+def insert_lastnum(lastnum):
+    # 현재 날짜와 시간을 가져옴
+    now = datetime.now()
+
+    # 타임스탬프를 'YYYY-MM-DD HH:MM:SS' 형식의 문자열로 변환
+    timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+    print(lastnum, timestamp)
+    # INSERT 쿼리에 lastnum과 현재 타임스탬프 포함
+    insert_query = f"""
+    INSERT INTO batch (start_num, timestamp) VALUES ({lastnum+1}, '{timestamp}');
+    """
+    print(insert_query)
+    mysqlconnect.execute_insert_query(insert_query)
+    print("Inserted with timestamp")
