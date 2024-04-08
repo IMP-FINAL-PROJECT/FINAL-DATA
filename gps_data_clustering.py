@@ -35,6 +35,6 @@ def perform_dbscan_clustering(gps_data):
                 points = weighted_data[labels == cluster]
                 center = points.mean(axis=0)
                 ratio = cluster_counts[cluster] / total_points
-                cluster_info.append({'cluster': cluster, 'ratio': ratio, 'center': center})
+                cluster_info.append({"cluster": cluster, "ratio": ratio, "latitude":center[0] ,"longitude": center[1]})
 
     return cluster_info
