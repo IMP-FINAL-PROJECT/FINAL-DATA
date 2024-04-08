@@ -5,6 +5,7 @@ from excel_data_loader import get_sunrise_sunset, round_up_time
 from gps_data_map import create_and_save_map
 from collections import defaultdict
 from gps_data_clustering import perform_dbscan_clustering
+from datainsert import insert_dailylifepattern_data
 import field_mappings
 
 
@@ -42,7 +43,7 @@ def classify_and_summarize_data(sensor_data_list):
                     summary[id][date]['gps']['map'] = map_file_path
 
 
-
+        calculate_averages(summary[id])
     return summary
 
 
@@ -52,7 +53,7 @@ batch_sensor_data_start_num = datacall.get_latest_start_num()
 sensor_data_list = datacall.get_sensor_data(batch_sensor_data_start_num)
 # classify_and_summarize_data 함수 사용
 summary_data = classify_and_summarize_data(sensor_data_list)
-
+insert_dailylifepattern_data(summary_data)
 # 요약 데이터 출력
 for id, dates in summary_data.items():
     for date, periods in dates.items():
