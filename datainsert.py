@@ -65,11 +65,9 @@ def insert_lastnum(lastnum):
 
     # 타임스탬프를 'YYYY-MM-DD HH:MM:SS' 형식의 문자열로 변환
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
-    print(lastnum, timestamp)
     # INSERT 쿼리에 lastnum과 현재 타임스탬프 포함
     insert_query = f"""
     INSERT INTO batch (start_num, timestamp) VALUES ({lastnum+1}, '{timestamp}');
     """
-    print(insert_query)
     mysqlconnect.execute_insert_query(insert_query)
     print("Inserted with timestamp")

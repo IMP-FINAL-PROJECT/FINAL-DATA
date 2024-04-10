@@ -47,15 +47,14 @@ def classify_and_summarize_data(sensor_data_list):
     return summary
 
 
-
+"""
 import datacall
 batch_sensor_data_start_num = datacall.get_latest_start_num()
 sensor_data_list = datacall.get_sensor_data(batch_sensor_data_start_num)
-# classify_and_summarize_data 함수 사용
 summary_data = classify_and_summarize_data(sensor_data_list)
 insert_dailylifepattern_data(summary_data)
 insert_lastnum(sensor_data_list[-1][0])
-# 요약 데이터 출력
 for id, dates in summary_data.items():
     for date, periods in dates.items():
         print(f"ID: {id}, Date: {date}, Daytime Count: {periods['daytime']}, Sunset Count: {periods['sunset']}, Cluster: {periods['gps']['cluster']}")
+        """
