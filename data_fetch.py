@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, time
 from excel_data_loader import get_sunrise_sunset, round_up_time
 from dataselect import query_existing_id_date_combinations
-
+from dataselect import fetch_data_from_db
 
 def fetch_data_for_sunrise_intervals(existing_entries_list, batch_sensor_data_start_num):
     data_to_fetch = []
