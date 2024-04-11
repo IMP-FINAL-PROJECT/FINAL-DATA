@@ -21,3 +21,8 @@ def fetch_data_from_db(data_to_fetch, batch_sensor_data_start_num):
         print(batch_sensor_data_start_num)
         results+=mysqlconnect.execute_val_query(query, (id, date, sunrise_today, (date + timedelta(days=1)), sunrise_next_day, batch_sensor_data_start_num))
     return results
+
+
+def fetch_gps_home_data (id):
+    query = "SELECT address FROM user WHERE id = %s"
+    return mysqlconnect.execute_val_query(query, (id))

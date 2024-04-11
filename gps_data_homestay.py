@@ -1,5 +1,6 @@
 import math
-
+from dataselect import fetch_gps_home_data
+from ast import literal_eval
 def haversine(lat1, lon1, lat2, lon2):
     # 지구 반지름 (미터)
     R = 6371000
@@ -27,12 +28,18 @@ def check_stay_ratio(clustering_results, home_lat, home_lon):
             return stay_ratio  # 해당 클러스터의 머문 비율 반환
     
     # 반경 50미터 내에 클러스터가 없는 경우
-    return "No cluster within 50m."
+    return 0
 
-# 클러스터링 결과 예시
+def homestay_percentage(id,clustering_results):
+    # 데이터베이스에서 id에 해당하는 데이터를 가져옴
+    gps_data = literal_eval((fetch_gps_home_data(id))[0][0])
+    # 예시 위도 경도 (집의 위도, 경도)
+    home_lat = gps_data[0]
+    home_lon = gps_data[1]
+    # 집 근처 클러스터의 머문 비율 반환
+    return check_stay_ratio(clustering_results, home_lat, home_lon)
+
 clustering_results = [[0, 0.8933739527798934, 36.79894089759768, 127.0804083873752], [1, 0.10662604722010663, 36.79354076385498, 127.08188258579798]]
 
-# 함수 테스트 (예시 위도 경도 사용)
-home_lat = 36.798851  # 예시 집의 위도
-home_lon = 127.080424  # 예시 집의 경도
-print(check_stay_ratio(clustering_results, home_lat, home_lon))
+
+print(homestay_percentage("dongwook@naver.com",clustering_results))
