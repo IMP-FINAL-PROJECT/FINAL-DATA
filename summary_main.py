@@ -6,13 +6,14 @@ from gps_data_map import create_and_save_map
 from collections import defaultdict
 from gps_data_clustering import perform_dbscan_clustering
 from datainsert import insert_dailylifepattern_data, insert_lastnum
+from gps_data_homestay import homestay_percentage
 import field_mappings
 
 
 def classify_and_summarize_data(sensor_data_list):
     data_by_id = classify_data_by_id(sensor_data_list)
     summary = defaultdict(lambda: defaultdict(lambda: {
-        'gps': {'count': 0, 'gps': [],'map': '', 'confirm':[], 'cluster':[]},
+        'gps': {'count': 0, 'gps': [],'map': '', 'confirm':[], 'cluster':[], 'homestay':0},
         'daytime': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0},
         'sunset': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0}
     }))
@@ -38,6 +39,9 @@ def classify_and_summarize_data(sensor_data_list):
                 cluster_ratios = perform_dbscan_clustering(gps_data)
                 if cluster_ratios:
                     summary[id][date]['gps']['cluster'] = cluster_ratios
+                    home_stay_ratio = homestay_percentage(id,cluster_ratios)
+                    if home_stay_ratio:
+                        summary[id][date]['gps']['homestay'] = home_stay_ratio
                 map_file_path = create_and_save_map(gps_data, id, date)
                 if map_file_path:
                     summary[id][date]['gps']['map'] = map_file_path

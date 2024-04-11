@@ -30,16 +30,21 @@ def check_stay_ratio(clustering_results, home_lat, home_lon):
     # 반경 50미터 내에 클러스터가 없는 경우
     return 0
 
-def homestay_percentage(id,clustering_results):
+
+def homestay_percentage(id, clustering_results):
     # 데이터베이스에서 id에 해당하는 데이터를 가져옴
-    gps_data = literal_eval((fetch_gps_home_data(id))[0][0])
-    # 예시 위도 경도 (집의 위도, 경도)
-    home_lat = gps_data[0]
-    home_lon = gps_data[1]
-    # 집 근처 클러스터의 머문 비율 반환
-    return check_stay_ratio(clustering_results, home_lat, home_lon)
-
-clustering_results = [[0, 0.8933739527798934, 36.79894089759768, 127.0804083873752], [1, 0.10662604722010663, 36.79354076385498, 127.08188258579798]]
-
-
-print(homestay_percentage("dongwook@naver.com",clustering_results))
+    result = fetch_gps_home_data(id)
+    
+    # 결과가 비어있지 않은지 확인
+    if result and result[0]:  # result가 비어있지 않고, result의 첫 번째 요소도 비어있지 않을 때
+        gps_data_str = result[0][0]  # 문자열 데이터 추출
+        gps_data = literal_eval(gps_data_str)  # 문자열을 리스트로 변환
+        
+        # 예시 위도 경도 (집의 위도, 경도)
+        home_lat, home_lon = gps_data
+        
+        # 집 근처 클러스터의 머문 비율 반환
+        return check_stay_ratio(clustering_results, home_lat, home_lon)
+    else:
+        # 유효한 데이터가 없는 경우, 적절한 오류 메시지나 기본값 반환
+        return -1
