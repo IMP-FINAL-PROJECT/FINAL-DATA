@@ -15,13 +15,16 @@ def calculate_illuminance_avg(categories, category):
     categories[category]['illuminance_avg'] = categories[category]['illuminance_sum'] / categories[category]['count']
     del categories[category]['illuminance_sum']  # 사용 완료된 합계 값 삭제
 
+
 def calculate_pedometer_avg(categories, category):
     """'pedometer'의 평균값을 계산합니다."""
     categories[category]['pedometer'] /= categories[category]['count']
 
+
 def calculate_screen_frequency_avg(categories, category):
     """'screen_frequency'의 평균값을 계산합니다."""
     categories[category]['screen_frequency'] /= categories[category]['count']
+
 
 def calculate_screen_duration_avg(categories, category):
     """'screen_duration'의 평균값을 계산합니다."""
