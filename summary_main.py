@@ -7,6 +7,7 @@ from collections import defaultdict
 from gps_data_clustering import perform_dbscan_clustering
 from datainsert import insert_dailylifepattern_data, insert_lastnum
 from gps_data_homestay import homestay_percentage
+from gps_data_save import save_gps_data
 import field_mappings
 
 
@@ -35,6 +36,8 @@ def classify_and_summarize_data(sensor_data_list):
         for date, categories in summary[id].items():
             gps_data = categories['gps']['gps']
             if gps_data:
+                file_path = save_gps_data(gps_data, id, date)
+                summary[id][date]['gps']['data_file'] = file_path
                 cluster_ratios = perform_dbscan_clustering(gps_data)
                 if cluster_ratios:
                     summary[id][date]['gps']['cluster'] = cluster_ratios
