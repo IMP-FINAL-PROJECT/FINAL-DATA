@@ -1,6 +1,8 @@
 from collections import defaultdict
 from datetime import datetime, time, timedelta
 import field_mappings
+import numpy as np
+import math
 #센서 데이터 리스트를 사용자 ID별로 분류합니다.
 def classify_data_by_id(sensor_data_list):
     data_by_id = defaultdict(list)
@@ -8,6 +10,40 @@ def classify_data_by_id(sensor_data_list):
         data_by_id[data[field_mappings.SENSOR_ID_INDEX]].append(data)
     return data_by_id
 
+def remove_outliers(gps_data):
+    i = 1  # 첫 번째와 마지막 데이터는 비교 대상이 없으므로 중간 데이터부터 시작
+    threshold = 0.0005  # 초기 이상치 판단 기준
+    last_removed_index = -1  # 마지막으로 제거된 이상치의 인덱스 초기화
+    
+    while i < len(gps_data) - 1:
+        # 제거된 이상치를 고려하여 이전 위치 결정
+        if last_removed_index !=  -1:
+            prev = last_removed_index  # 이상치가 제거된 위치
+        else:
+            prev = gps_data[i - 1]
+        
+        curr = gps_data[i]
+        next = gps_data[i + 1]
+        
+        # 전후 데이터의 평균 위치 계산
+        avg_lat = (prev[0] + next[0]) / 2
+        avg_lon = (prev[1] + next[1]) / 2
+        
+        # 현재 위치와 평균 위치 사이의 거리 계산
+        distance = math.sqrt((curr[0] - avg_lat)**2 + (curr[1] - avg_lon)**2)
+        
+        # 거리가 현재 threshold 이상 차이 나면 이상치로 간주
+        if distance > threshold:
+            gps_data[i - 1][2] += curr[2]  # 이전 데이터에 이상치 duration 추가
+            gps_data.pop(i)  # 이상치 삭제
+            last_removed_index = curr  # 마지막으로 이상치가 제거된 위치 저장
+            print("이상치 제거: 위치 = ({}, {}), 새 기준 = {}".format(curr[0], curr[1], threshold))
+        else:
+            last_removed_index = -1  # 이상치가 아니면 리셋
+            threshold = 0.0005  # 이상치 아니면 기준 리셋
+            i += 1
+
+    return gps_data
 #데이터 포인트의 카테고리와 날짜를 결정합니다.
 def get_custom_date_and_category(timestamp, sunrise_today_time, sunset_today_time, current_date):
     if sunrise_today_time <= timestamp < sunset_today_time:
@@ -20,6 +56,13 @@ def get_custom_date_and_category(timestamp, sunrise_today_time, sunset_today_tim
 def add_gps_data_with_timestamps(data, summary, custom_date):
     # GPS 데이터와 시간 인덱스를 가져옵니다.
     gps_data_list = eval(data[field_mappings.SENSOR_GPS_INDEX])
+
+    # 이상치 제거
+    gps_data_list = remove_outliers(gps_data_list)
+
+
+
+
     hour_of_day = data[field_mappings.SENSOR_HOUR_INDEX]
     date = data[field_mappings.SENSOR_TIMESTAMP_INDEX]
     
