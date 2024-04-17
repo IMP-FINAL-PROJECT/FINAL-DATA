@@ -44,8 +44,8 @@ def create_regular_intervals(data, interval_seconds=10):
 
 
 # 파일 경로
-file_path_day1 = './gps_data/2024-04-13/joowon@naver.com.json'
-file_path_day2 = './gps_data/2024-04-14/joowon@naver.com.json'
+file_path_day1 = './gps_data/2024-04-08/joowon@naver.com.json'
+file_path_day2 = './gps_data/2024-04-09/joowon@naver.com.json'
 
 
 # 데이터 로드
