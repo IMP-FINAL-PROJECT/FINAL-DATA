@@ -7,6 +7,7 @@ from collections import defaultdict
 from gps_data_clustering import perform_dbscan_clustering
 from datainsert import insert_dailylifepattern_data, insert_lastnum
 from gps_data_homestay import homestay_percentage
+from gps_data_save import save_gps_data
 import field_mappings
 
 
@@ -31,11 +32,12 @@ def classify_and_summarize_data(sensor_data_list):
                 timestamp = datetime.combine(data[field_mappings.SENSOR_TIMESTAMP_INDEX], time(data[field_mappings.SENSOR_HOUR_INDEX]))
                 custom_date, category = get_custom_date_and_category(timestamp, sunrise_today_time, sunset_today_time, current_date)
                 process_data_point(data, summary[id], custom_date, category)
-                
         create_and_save_map(summary[id][custom_date]['gps']['gps'], id, custom_date)
         for date, categories in summary[id].items():
             gps_data = categories['gps']['gps']
             if gps_data:
+                file_path = save_gps_data(gps_data, id, date)
+                summary[id][date]['gps']['data_file'] = file_path
                 cluster_ratios = perform_dbscan_clustering(gps_data)
                 if cluster_ratios:
                     summary[id][date]['gps']['cluster'] = cluster_ratios
@@ -51,14 +53,16 @@ def classify_and_summarize_data(sensor_data_list):
     return summary
 
 
-"""
+
 import datacall
 batch_sensor_data_start_num = datacall.get_latest_start_num()
+batch_sensor_data_start_num=0
 sensor_data_list = datacall.get_sensor_data(batch_sensor_data_start_num)
 summary_data = classify_and_summarize_data(sensor_data_list)
-insert_dailylifepattern_data(summary_data)
-insert_lastnum(sensor_data_list[-1][0])
+#insert_dailylifepattern_data(summary_data)
+#insert_lastnum(sensor_data_list[-1][0])
+'''
 for id, dates in summary_data.items():
     for date, periods in dates.items():
-        print(f"ID: {id}, Date: {date}, Daytime Count: {periods['daytime']}, Sunset Count: {periods['sunset']}, Cluster: {periods['gps']['cluster']}")
-        """
+        print(f"ID: {id}, Date: {date}, Daytime Count: {periods['daytime']}, Sunset Count: {periods['sunset']}, Cluster: {periods['gps']['gps']}")
+'''

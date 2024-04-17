@@ -5,7 +5,6 @@ def insert_dailylifepattern_data(data):
     """
     주어진 start_num을 기준으로 sensor 테이블에서 모든 레코드를 가져오는 함수
     """
-    print("asdasdasdasdasdad")
     values_to_insert = []
     for id, dates in data.items():
         for date, periods in dates.items():
@@ -49,7 +48,6 @@ def insert_dailylifepattern_data(data):
                 hour_index,
                 date        
             ))
-    print(values_to_insert)
     insert_query = """
     INSERT INTO daily_life_pattern (id, place_diversity, home_stay_percentage, life_routine_consistency, night_phone_use_frequency, night_phone_use_duration, day_phone_use_frequency, day_phone_use_duration, day_light_exposure, night_light_exposure, day_step_count, night_step_count, day_time_count, night_time_count, hour_index, date)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);

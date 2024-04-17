@@ -12,7 +12,7 @@ def perform_dbscan_clustering(gps_data):
     # 머무른 시간에 비례하여 데이터 복제 (1분마다 1회 복제)
     weighted_data = []
     for data in filtered_data:
-        latitude, longitude, duration = data
+        latitude, longitude, duration,timestamp = data
         copies = duration // 60000  # 1분 단위로 복제
         for _ in range(int(copies)):
             weighted_data.append([latitude, longitude])
