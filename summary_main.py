@@ -15,8 +15,8 @@ def classify_and_summarize_data(sensor_data_list):
     data_by_id = classify_data_by_id(sensor_data_list)
     summary = defaultdict(lambda: defaultdict(lambda: {
         'gps': {'count': 0, 'gps': [],'map': '', 'confirm':[], 'cluster':[], 'homestay':0},
-        'daytime': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0},
-        'sunset': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0}
+        'daytime': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0, 'call_frequency': 0, 'call_duration': 0},
+        'sunset': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0, 'call_frequency': 0, 'call_duration': 0}
     }))
 
     for id, data_list in data_by_id.items():
@@ -61,8 +61,7 @@ sensor_data_list = datacall.get_sensor_data(batch_sensor_data_start_num)
 summary_data = classify_and_summarize_data(sensor_data_list)
 #insert_dailylifepattern_data(summary_data)
 #insert_lastnum(sensor_data_list[-1][0])
-'''
+
 for id, dates in summary_data.items():
     for date, periods in dates.items():
-        print(f"ID: {id}, Date: {date}, Daytime Count: {periods['daytime']}, Sunset Count: {periods['sunset']}, Cluster: {periods['gps']['gps']}")
-'''
+        print(f"ID: {id}, Date: {date}, Daytime Count: {periods['daytime']}, Sunset Count: {periods['sunset']}, Cluster: {periods['gps']['cluster']}")
