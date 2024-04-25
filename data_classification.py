@@ -95,6 +95,9 @@ def process_data_point(data, summary, custom_date, category):
     summary[custom_date][category]['pedometer'] += data[field_mappings.SENSOR_PEDOMETER_INDEX]
     summary[custom_date][category]['screen_frequency'] += data[field_mappings.SENSOR_SCREEN_FREQUENCY_INDEX]
     summary[custom_date][category]['screen_duration'] += data[field_mappings.SENSOR_SCREEN_DURATION_INDEX]
+    summary[custom_date][category]['call_frequency'] += data[field_mappings.SENSOR_PHONE_FREQUENCY_INDEX]
+    summary[custom_date][category]['call_duration'] += data[field_mappings.SENSOR_PHONE_DURATION_INDEX]
+   
     if sum(illuminance_array) > 0:
         summary[custom_date][category]['illuminance_sum'] += avg_illuminance
 

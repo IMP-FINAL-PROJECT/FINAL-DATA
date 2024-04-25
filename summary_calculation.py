@@ -8,6 +8,8 @@ def calculate_averages(summary):
                 calculate_pedometer_avg(categories, category)
                 calculate_screen_frequency_avg(categories, category)
                 calculate_screen_duration_avg(categories, category)
+                calculate_call_frequency_avg(categories, category)
+                calculate_call_duration_avg(categories, category)
 
 
 def calculate_illuminance_avg(categories, category):
@@ -29,3 +31,13 @@ def calculate_screen_frequency_avg(categories, category):
 def calculate_screen_duration_avg(categories, category):
     """'screen_duration'의 평균값을 계산합니다."""
     categories[category]['screen_duration'] /= categories[category]['count']
+
+
+def calculate_call_frequency_avg(categories, category):
+    """'screen_frequency'의 평균값을 계산합니다."""
+    categories[category]['call_frequency'] /= categories[category]['count']
+
+
+def calculate_call_duration_avg(categories, category):
+    """'screen_duration'의 평균값을 계산합니다."""
+    categories[category]['call_duration'] /= categories[category]['count']
