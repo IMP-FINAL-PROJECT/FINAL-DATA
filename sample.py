@@ -5,18 +5,29 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from scipy.signal import lombscargle
 
-def create_regular_intervals(data, interval_seconds=3600):
-    timestamps = []
-    latitudes = []
-    longitudes = []
+# Global parameters
+no_of_past_days = 5
+hours_a_day =144
+base_date = '2024-04-20'
+select_circadianmovement = [100,200,300,400,600,800,1200,2400]
+weight_circadianmovement = [8,7,6,5,4,3,2,1]
+margin_window=30
+def compute_ECM(data, margin_window_begin=70, margin_window_end=130):
+    result = sum(data[margin_window_begin:margin_window_end]) 
+    return result
 
+def weight_compute_ECM(data):
+    result=0
+    for i in select_circadianmovement:
+        print(i)
+        result+=sum(data[i-margin_window:i+margin_window])*weight_circadianmovement[select_circadianmovement.index(i)]
+    return result/sum(weight_circadianmovement)
+
+def create_regular_intervals(data, interval_seconds=int(86400/hours_a_day)):
+    timestamps, latitudes, longitudes = [], [], []
     for entry in data:
-        latitude = entry[0]
-        longitude = entry[1]
-        duration_ms = entry[2]
-        start_time_str = entry[3]
+        latitude, longitude, duration_ms, start_time_str = entry
         start_time = datetime.fromisoformat(start_time_str)
-
         duration_seconds = duration_ms / 1000
         num_intervals = int(np.ceil(duration_seconds / interval_seconds))
 
@@ -26,74 +37,133 @@ def create_regular_intervals(data, interval_seconds=3600):
             latitudes.append(latitude)
             longitudes.append(longitude)
 
-    df = pd.DataFrame({
-        'timestamp': timestamps,
-        'latitude': latitudes,
-        'longitude': longitudes
-    })
-    
+    df = pd.DataFrame({'timestamp': timestamps, 'latitude': latitudes, 'longitude': longitudes})
     df.set_index('timestamp', inplace=True)
     df.sort_index(inplace=True)
+    
+    # Check if the number of records is less than 80% of hours_a_day
+    if len(df) < hours_a_day * 0.7:
+        return   # Return None if data is insufficient
+
     df = df.resample(f'{interval_seconds}s').mean().interpolate()
     return df
 
-def load_and_process_gps_data(file_path):
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-    return create_regular_intervals(data)
 
+def generate_file_paths(base_date, days, id):
+    if isinstance(base_date, str):
+        base_date = datetime.fromisoformat(base_date)
+    file_paths = []
+    # 시작 날짜를 기준으로 과거에서 현재로 날짜를 생성합니다.
+    for i in range(days):
+        # 과거로 갈수록 더 큰 i를 빼주어 최근 날짜로 가까워지게 합니다.
+        date = base_date - timedelta(days=days - 1 - i)
+        file_path = f'./gps_data/{date.strftime("%Y-%m-%d")}/{id}.json'
+        file_paths.insert(0, file_path)
+    return file_paths
+
+
+def load_and_process_gps_data(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return create_regular_intervals(data)
+    except FileNotFoundError:
+        return
+    
 def save_to_excel(df, output_path):
     df.to_excel(output_path)
 
-# 파일 경로 설정
-file_paths = [
-    './gps_data/2024-04-06/dongwook@naver.com.json',
-    './gps_data/2024-04-07/dongwook@naver.com.json',
-    './gps_data/2024-04-08/dongwook@naver.com.json',
-]
+def circadianmovement_main(base_date, id):
+    # Generate paths for up to twice the number of required days
+    file_paths = generate_file_paths(base_date, no_of_past_days * 2, id)
+    
+    # Initialize list to keep track of the dates used in the analysis
+    successful_dates = []
+    
+    # Attempt to load data
+    dataframes = []
+    for file_path in file_paths:
+        df = load_and_process_gps_data(file_path)
+        if df is not None:
+            dataframes.append(df)
+            # Extract and store the date from the file path if the data load was successful
+            date_from_path = file_path.split('/')[-2]  # Assumes file path format "./gps_data/YYYY-MM-DD/id.json"
+            successful_dates.append(date_from_path)
+    
+    # Check if we have at least the required number of samples
+    if len(dataframes) < no_of_past_days:
+        print("Insufficient data to perform analysis. Returning 0.")
+        return 0
 
-# 각 파일에서 데이터를 처리하고 모든 데이터프레임을 하나의 리스트에 저장
-dataframes = [load_and_process_gps_data(file_path) for file_path in file_paths]
+    # Limit the number of days to the first 5 valid dataframes
+    dataframes = dataframes[:no_of_past_days]
+    successful_dates = successful_dates[:no_of_past_days]  # Also limit the dates list to the used dataframes
 
-# 모든 데이터프레임을 하나로 결합
-combined_data = pd.concat(dataframes)
-combined_data.reset_index(inplace=True)  # 인덱스 리셋
-combined_data['number'] = np.arange(1, len(combined_data) + 1)  # 순차적인 번호 추가
-'''
-combined_data.to_csv('output.csv', index=False)
-raise
-'''
-# Assume 'number' and 'latitude' are columns from your 'combined_data' DataFrame
-number = combined_data['number'].values  # This should be the 'number' column
-latitude = combined_data['latitude'].values  # This should be the 'latitude' column
-# 'latitude' 열의 데이터를 numpy 배열로 가져옵니다.
-latitude = combined_data['latitude'].values
-'''
-# Min-Max 정규화를 사용하여 위도 데이터를 0과 1 사이의 값으로 스케일링합니다.
-latitude_min = latitude.min()
-latitude_max = latitude.max()
-latitude = (latitude - latitude_min) / (latitude_max - latitude_min)
-'''
-# Frequency range for the Lomb-Scargle periodogram
-#freq = np.linspace(1, int(len(combined_data)), int(len(combined_data)))
-freq = np.linspace(0.1, 24, 24)
+    dataframes.reverse()  # Reverse the order of dataframes
+    successful_dates.reverse()
+    # Combine the available data
+    combined_data = pd.concat(dataframes)
+    combined_data.reset_index(inplace=True)
 
-# Calculate Lomb-Scargle periodogram
-pgram = lombscargle(number, latitude, freq, normalize=True)
+    required_samples = no_of_past_days * hours_a_day
+    if len(combined_data) < required_samples:
+        # If there are not enough records, try to interpolate
+        if len(combined_data) > 0:
+            extended_time = pd.date_range(start=combined_data['timestamp'].min(), periods=required_samples, freq=f'{int(3600*24/hours_a_day)}S')
+            combined_data.set_index('timestamp', inplace=True)
+            combined_data = combined_data.reindex(extended_time).interpolate().reset_index()
+        else:
+            print("Not enough data points even after extending the range. Returning 0.")
+            return 0
+    else:
+        combined_data = combined_data.head(required_samples)
 
-# Plotting
-fig, (ax_t, ax_w) = plt.subplots(2, 1, constrained_layout=True)
+    combined_data['number'] = np.arange(1, len(combined_data) + 1)
+    save_to_excel(combined_data, 'combined_data.xlsx')
+    # Prepare data for Lomb-Scargle periodogram
+    time = np.linspace(0, no_of_past_days * (2 * np.pi), required_samples)
+    latitude = combined_data['latitude'].values
+    longitude = combined_data['longitude'].values
 
-# Time-domain plot
-ax_t.plot(number, latitude, 'bo')
-ax_t.set_title('The Lomb-Scargle periodogram')
-ax_t.set_xlabel('Time')
-ax_t.set_ylabel('Latitude')
+    # Normalize the data
+    latitude = (latitude - latitude.mean())
+    longitude = (longitude - longitude.mean())
 
-# Frequency-domain plot (Lomb-Scargle periodogram)
-ax_w.plot(freq, pgram)
-ax_w.set_xlabel('Frequency')
-ax_w.set_ylabel('Normalized Amplitude')
+    # Calculate frequency domain
+    freq = np.linspace(0.01, 10, 1000)
+    pgram_latitude = lombscargle(time, latitude, freq, )
+    pgram_longitude = lombscargle(time, longitude, freq, )
+    
+    # Plotting
+    fig, (ax_t, ax_w) = plt.subplots(2, 1, constrained_layout=True)
 
-# Display the plot
-plt.show()
+    # Time-domain plot
+    ax_t.plot(time, latitude, 'bo')
+    ax_t.set_title(f'The Lomb-Scargle periodogram ')
+    ax_t.set_xlabel('Time')
+    ax_t.set_ylabel('Latitude')
+
+    # Frequency-domain plot (Lomb-Scargle periodogram)
+    # angualar frequency가 1인 지점의 봉우리를 면적내어 강도를 측정하자.
+    ax_w.plot(freq, pgram_latitude)
+    ax_w.set_xlabel('Angular frequency')
+    ax_w.set_ylabel('Normalized amplitude')
+    # Compute energy of circadian movement
+    ecm_latitude = compute_ECM(pgram_latitude)
+    ecm_longitude = compute_ECM(pgram_longitude)
+    weight_ecm_latitude = weight_compute_ECM(pgram_latitude)
+    weight_ecm_longitude = weight_compute_ECM(pgram_longitude)
+
+    # Output the dates used in the analysis along with ECM results
+    print('Dates used for analysis:', successful_dates)
+    print('Energy of Circadian Movement (Latitude) =', ecm_latitude)
+    print('Energy of Circadian Movement (Longitude) =', ecm_longitude)
+    print('Weight Circadian Movement (Latitude) =', weight_ecm_latitude)
+    print('Weight of Circadian Movement (Longitude) =', weight_ecm_longitude)
+    plt.show()
+    return (ecm_latitude + ecm_longitude) / 2
+
+# Example usage:
+result = circadianmovement_main(base_date, 'dongwook@naver.com')
+if result != 0:
+    print(result)
