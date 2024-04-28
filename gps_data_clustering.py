@@ -37,4 +37,4 @@ def perform_dbscan_clustering(gps_data):
                 ratio = cluster_counts[cluster] / total_points
                 cluster_info.append([ratio, center[0] ,center[1]])
     cluster_info = sorted(cluster_info, key=lambda x: x[0], reverse=True)
-    return cluster_info
+    return cluster_info[:6]
