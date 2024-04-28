@@ -8,7 +8,6 @@ from scipy.signal import lombscargle
 # Global parameters
 no_of_past_days = 5
 hours_a_day =144
-base_date = '2024-04-20'
 select_circadianmovement = [100,200,300,400,600,800,1200,2400]
 weight_circadianmovement = [8,7,6,5,4,3,2,1]
 margin_window=30
@@ -19,7 +18,6 @@ def compute_ECM(data, margin_window_begin=70, margin_window_end=130):
 def weight_compute_ECM(data):
     result=0
     for i in select_circadianmovement:
-        print(i)
         result+=sum(data[i-margin_window:i+margin_window])*weight_circadianmovement[select_circadianmovement.index(i)]
     return result/sum(weight_circadianmovement)
 
@@ -58,6 +56,7 @@ def generate_file_paths(base_date, days, id):
         # 과거로 갈수록 더 큰 i를 빼주어 최근 날짜로 가까워지게 합니다.
         date = base_date - timedelta(days=days - 1 - i)
         file_path = f'./gps_data/{date.strftime("%Y-%m-%d")}/{id}.json'
+        #file_path = f'./gps_data/2024-04-11/{id}.json'
         file_paths.insert(0, file_path)
     return file_paths
 
@@ -72,6 +71,35 @@ def load_and_process_gps_data(file_path):
     
 def save_to_excel(df, output_path):
     df.to_excel(output_path)
+    
+def plot_circadian_movement(time, latitude, longitude, pgram_latitude, pgram_longitude):
+    fig, axs = plt.subplots(4, 1, figsize=(10, 12), constrained_layout=True)
+
+    # Time-domain plot for Latitude
+    axs[0].plot(time, latitude, 'bo')
+    axs[0].set_title('Time-Domain Plot (Latitude)')
+    axs[0].set_xlabel('Time')
+    axs[0].set_ylabel('Latitude')
+
+    # Frequency-domain plot for Latitude
+    axs[1].plot(pgram_latitude)
+    axs[1].set_title('Lomb-Scargle Periodogram (Latitude)')
+    axs[1].set_xlabel('Angular frequency')
+    axs[1].set_ylabel('Normalized amplitude')
+
+    # Time-domain plot for Longitude
+    axs[2].plot(time, longitude, 'go')
+    axs[2].set_title('Time-Domain Plot (Longitude)')
+    axs[2].set_xlabel('Time')
+    axs[2].set_ylabel('Longitude')
+
+    # Frequency-domain plot for Longitude
+    axs[3].plot(pgram_longitude)
+    axs[3].set_title('Lomb-Scargle Periodogram (Longitude)')
+    axs[3].set_xlabel('Angular frequency')
+    axs[3].set_ylabel('Normalized amplitude')
+
+    plt.show()
 
 def circadianmovement_main(base_date, id):
     # Generate paths for up to twice the number of required days
@@ -119,7 +147,7 @@ def circadianmovement_main(base_date, id):
         combined_data = combined_data.head(required_samples)
 
     combined_data['number'] = np.arange(1, len(combined_data) + 1)
-    save_to_excel(combined_data, 'combined_data.xlsx')
+    
     # Prepare data for Lomb-Scargle periodogram
     time = np.linspace(0, no_of_past_days * (2 * np.pi), required_samples)
     latitude = combined_data['latitude'].values
@@ -131,39 +159,31 @@ def circadianmovement_main(base_date, id):
 
     # Calculate frequency domain
     freq = np.linspace(0.01, 10, 1000)
-    pgram_latitude = lombscargle(time, latitude, freq, )
-    pgram_longitude = lombscargle(time, longitude, freq, )
+    pgram_latitude = lombscargle(time, latitude, freq, normalize=True)
+    pgram_longitude = lombscargle(time, longitude, freq, normalize=True)
+
+    #엑셀로 데이터 확인 합니다.
+    #save_to_excel(combined_data, 'combined_data.xlsx')
     
-    # Plotting
-    fig, (ax_t, ax_w) = plt.subplots(2, 1, constrained_layout=True)
+    # 그래프를 그립니다.
+    #plot_circadian_movement(time, latitude, longitude, pgram_latitude, pgram_longitude)
 
-    # Time-domain plot
-    ax_t.plot(time, latitude, 'bo')
-    ax_t.set_title(f'The Lomb-Scargle periodogram ')
-    ax_t.set_xlabel('Time')
-    ax_t.set_ylabel('Latitude')
 
-    # Frequency-domain plot (Lomb-Scargle periodogram)
-    # angualar frequency가 1인 지점의 봉우리를 면적내어 강도를 측정하자.
-    ax_w.plot(freq, pgram_latitude)
-    ax_w.set_xlabel('Angular frequency')
-    ax_w.set_ylabel('Normalized amplitude')
-    # Compute energy of circadian movement
     ecm_latitude = compute_ECM(pgram_latitude)
     ecm_longitude = compute_ECM(pgram_longitude)
     weight_ecm_latitude = weight_compute_ECM(pgram_latitude)
     weight_ecm_longitude = weight_compute_ECM(pgram_longitude)
 
     # Output the dates used in the analysis along with ECM results
-    print('Dates used for analysis:', successful_dates)
-    print('Energy of Circadian Movement (Latitude) =', ecm_latitude)
-    print('Energy of Circadian Movement (Longitude) =', ecm_longitude)
-    print('Weight Circadian Movement (Latitude) =', weight_ecm_latitude)
-    print('Weight of Circadian Movement (Longitude) =', weight_ecm_longitude)
-    plt.show()
-    return (ecm_latitude + ecm_longitude) / 2
+    # print('Dates used for analysis:', successful_dates)
+    # print('Energy of Circadian Movement (Latitude) =', ecm_latitude)
+    # print('Energy of Circadian Movement (Longitude) =', ecm_longitude)
+    # print('Weight Circadian Movement (Latitude) =', weight_ecm_latitude)
+    # print('Weight of Circadian Movement (Longitude) =', weight_ecm_longitude)
 
-# Example usage:
-result = circadianmovement_main(base_date, 'dongwook@naver.com')
-if result != 0:
-    print(result)
+    return (weight_ecm_latitude + weight_ecm_longitude) / 2
+
+#Example usage:
+# result = circadianmovement_main(base_date, 'joowon@naver.com')
+# if result != 0:
+#     print(result)
