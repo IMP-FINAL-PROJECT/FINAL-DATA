@@ -8,13 +8,14 @@ from gps_data_clustering import perform_dbscan_clustering
 from datainsert import insert_dailylifepattern_data, insert_lastnum
 from gps_data_homestay import homestay_percentage
 from gps_data_save import save_gps_data
+from sample import circadianmovement_main
 import field_mappings
 
 
 def classify_and_summarize_data(sensor_data_list):
     data_by_id = classify_data_by_id(sensor_data_list)
     summary = defaultdict(lambda: defaultdict(lambda: {
-        'gps': {'count': 0, 'gps': [],'map': '', 'confirm':[], 'cluster':[], 'homestay':0},
+        'gps': {'count': 0, 'gps': [],'map': '', 'confirm':[], 'cluster':[], 'homestay':0, 'life_routine_consistency':0},
         'daytime': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0, 'call_frequency': 0, 'call_duration': 0},
         'sunset': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0, 'call_frequency': 0, 'call_duration': 0}
     }))
@@ -48,6 +49,9 @@ def classify_and_summarize_data(sensor_data_list):
                 if map_file_path:
                     summary[id][date]['gps']['map'] = map_file_path
 
+            if len(categories['gps']['confirm']) > 22:
+                summary[id][date]['gps']['life_routine_consistency'] = circadianmovement_main(date,id)
+
 
         calculate_averages(summary[id])
     return summary
@@ -62,6 +66,6 @@ summary_data = classify_and_summarize_data(sensor_data_list)
 #insert_dailylifepattern_data(summary_data)
 #insert_lastnum(sensor_data_list[-1][0])
 
-for id, dates in summary_data.items():
-    for date, periods in dates.items():
-        print(f"ID: {id}, Date: {date}, Daytime Count: {periods['daytime']}, Sunset Count: {periods['sunset']}, Cluster: {periods['gps']['cluster']}")
+# for id, dates in summary_data.items():
+#     for date, periods in dates.items():
+#         print(f"ID: {id}, Date: {date}, Daytime Count: {periods['daytime']}, Sunset Count: {periods['sunset']}, life_routine_consistency: {periods['gps']['life_routine_consistency']}")

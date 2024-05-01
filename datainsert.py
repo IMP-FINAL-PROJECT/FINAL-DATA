@@ -30,6 +30,7 @@ def insert_dailylifepattern_data(data):
         
             gps_cluster = str(periods['gps']['cluster'])  # 실제 데이터 구조에 맞게 조정
             home_stay_percentage = periods['gps']['homestay']  # 실제 데이터 구조에 맞게 조정
+            life_routine_consistency= periods['gps']['life_routine_consistency']  # 실제 데이터 구조에 맞게 조정
             hour_index = str(periods['gps']['confirm'])  # 실제 데이터 구조에 맞게 조정
         
         # 튜플 형태로 values_to_insert 리스트에 추가
@@ -38,7 +39,7 @@ def insert_dailylifepattern_data(data):
                 id,
                 gps_cluster,
                 home_stay_percentage,
-                "test",
+                life_routine_consistency,
                 daytime_screen_frequency, 
                 sunset_screen_frequency,
                 daytime_screen_duration, 
