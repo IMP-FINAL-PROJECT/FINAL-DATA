@@ -97,8 +97,14 @@ def process_data_point(data, summary, custom_date, category):
     summary[custom_date][category]['screen_duration'] += data[field_mappings.SENSOR_SCREEN_DURATION_INDEX]
     summary[custom_date][category]['call_frequency'] += data[field_mappings.SENSOR_PHONE_FREQUENCY_INDEX]
     summary[custom_date][category]['call_duration'] += data[field_mappings.SENSOR_PHONE_DURATION_INDEX]
+    sleeptime_screen_duration(summary,custom_date,data,category)
    
     if sum(illuminance_array) > 0:
         summary[custom_date][category]['illuminance_sum'] += avg_illuminance
 
 
+def sleeptime_screen_duration(summary,custom_date,data,category):
+    if category == 'sunset':
+        if (data[field_mappings.SENSOR_HOUR_INDEX] in (22,23,0,1,2)):
+            summary[custom_date]['sunset']['sleeptime_screen_duration'] += data[field_mappings.SENSOR_SCREEN_DURATION_INDEX]
+            summary[custom_date]['sunset']['sleeptime_screen_duration_count'] += 1

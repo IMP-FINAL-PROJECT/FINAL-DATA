@@ -25,6 +25,7 @@ def insert_dailylifepattern_data(data):
             sunset_pedometer = periods['sunset']['pedometer']
             sunset_screen_frequency = periods['sunset']['screen_frequency']
             sunset_screen_duration = periods['sunset']['screen_duration']
+            sleeptime_screen_duration = periods['sunset']['sleeptime_screen_duration']
             sunset_call_frequency = periods['sunset']['call_frequency']
             sunset_call_duration = periods['sunset']['call_duration']
         
@@ -44,6 +45,7 @@ def insert_dailylifepattern_data(data):
                 sunset_screen_frequency,
                 daytime_screen_duration, 
                 sunset_screen_duration, 
+                sleeptime_screen_duration,
                 daytime_call_frequency,
                 sunset_call_frequency,
                 daytime_call_duration,
@@ -58,8 +60,8 @@ def insert_dailylifepattern_data(data):
                 date        
             ))
     insert_query = """
-    INSERT INTO daily_life_pattern (id, place_diversity, home_stay_percentage, life_routine_consistency, day_phone_use_frequency, night_phone_use_frequency, day_phone_use_duration, night_phone_use_duration,day_call_use_frequency, night_call_use_frequency,  day_call_use_duration, night_call_use_duration, day_light_exposure, night_light_exposure, day_step_count, night_step_count, day_time_count, night_time_count, hour_index, date)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    INSERT INTO daily_life_pattern (id, place_diversity, home_stay_percentage, life_routine_consistency, day_phone_use_frequency, night_phone_use_frequency, day_phone_use_duration, night_phone_use_duration,sleeptime_screen_duration,day_call_use_frequency, night_call_use_frequency,  day_call_use_duration, night_call_use_duration, day_light_exposure, night_light_exposure, day_step_count, night_step_count, day_time_count, night_time_count, hour_index, date)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     mysqlconnect.executemany_query(insert_query,values_to_insert)
 
