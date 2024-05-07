@@ -165,8 +165,8 @@ def circadianmovement_main(base_date, id):
     #엑셀로 데이터 확인 합니다.
    #save_to_excel(combined_data, 'combined_data.xlsx')
     
-    # 그래프를 그립니다.
-    plot_circadian_movement(time, latitude, longitude, pgram_latitude, pgram_longitude)
+    # # 그래프를 그립니다.
+    # plot_circadian_movement(time, latitude, longitude, pgram_latitude, pgram_longitude)
 
 
     ecm_latitude = compute_ECM(pgram_latitude)
@@ -182,15 +182,21 @@ def circadianmovement_main(base_date, id):
     # print('Weight of Circadian Movement (Longitude) =', weight_ecm_longitude)
 
     # 평균 에너지 계산
-    average_ecm = (weight_ecm_latitude + weight_ecm_longitude) / 2
+    average_ecm = (ecm_latitude + ecm_longitude) / 2
 
     # 결과가 NaN인 경우, 3을 반환
-    if np.isnan(average_ecm):
-        return 3
-    
-    return average_ecm
+   
+    score_ecm=score_circadianmovement(average_ecm)
+    return score_ecm
 
-#Example usage:
-result = circadianmovement_main('2024-04-15', 'joowon@naver.com')
-if result != 0:
-    print(result)
+# #Example usage:
+# result = circadianmovement_main('2024-04-24', 'joowon@naver.com')
+# if result != 0:
+#     print(result)
+
+def score_circadianmovement(average_ecm):
+    if np.isnan(average_ecm):
+        return 100
+    average_ecm = min(average_ecm, 10)
+    score_ecm=10*average_ecm
+    return score_ecm
