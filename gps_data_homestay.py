@@ -21,7 +21,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
 def check_stay_ratio(clustering_results, home_lat, home_lon):
     for cluster in clustering_results:
-        cluster_id, stay_ratio, cluster_lat, cluster_lon = cluster
+        stay_ratio, cluster_lat, cluster_lon = cluster
         distance = haversine(home_lat, home_lon, cluster_lat, cluster_lon)
         
         if distance <= 50:  # 50미터 이내인 경우

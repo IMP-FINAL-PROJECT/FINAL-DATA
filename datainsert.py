@@ -25,11 +25,13 @@ def insert_dailylifepattern_data(data):
             sunset_pedometer = periods['sunset']['pedometer']
             sunset_screen_frequency = periods['sunset']['screen_frequency']
             sunset_screen_duration = periods['sunset']['screen_duration']
+            sleeptime_screen_duration = periods['sunset']['sleeptime_screen_duration']
             sunset_call_frequency = periods['sunset']['call_frequency']
             sunset_call_duration = periods['sunset']['call_duration']
         
             gps_cluster = str(periods['gps']['cluster'])  # 실제 데이터 구조에 맞게 조정
             home_stay_percentage = periods['gps']['homestay']  # 실제 데이터 구조에 맞게 조정
+            life_routine_consistency= periods['gps']['life_routine_consistency']  # 실제 데이터 구조에 맞게 조정
             hour_index = str(periods['gps']['confirm'])  # 실제 데이터 구조에 맞게 조정
         
         # 튜플 형태로 values_to_insert 리스트에 추가
@@ -38,11 +40,12 @@ def insert_dailylifepattern_data(data):
                 id,
                 gps_cluster,
                 home_stay_percentage,
-                "test",
+                life_routine_consistency,
                 daytime_screen_frequency, 
                 sunset_screen_frequency,
                 daytime_screen_duration, 
                 sunset_screen_duration, 
+                sleeptime_screen_duration,
                 daytime_call_frequency,
                 sunset_call_frequency,
                 daytime_call_duration,
@@ -57,8 +60,8 @@ def insert_dailylifepattern_data(data):
                 date        
             ))
     insert_query = """
-    INSERT INTO daily_life_pattern (id, place_diversity, home_stay_percentage, life_routine_consistency, day_phone_use_frequency, night_phone_use_frequency, day_phone_use_duration, night_phone_use_duration,day_call_use_frequency, night_call_use_frequency,  day_call_use_duration, night_call_use_duration, day_light_exposure, night_light_exposure, day_step_count, night_step_count, day_time_count, night_time_count, hour_index, date)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    INSERT INTO daily_life_pattern (id, place_diversity, home_stay_percentage, life_routine_consistency, day_phone_use_frequency, night_phone_use_frequency, day_phone_use_duration, night_phone_use_duration,sleeptime_screen_duration,day_call_use_frequency, night_call_use_frequency,  day_call_use_duration, night_call_use_duration, day_light_exposure, night_light_exposure, day_step_count, night_step_count, day_time_count, night_time_count, hour_index, date)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     mysqlconnect.executemany_query(insert_query,values_to_insert)
 
