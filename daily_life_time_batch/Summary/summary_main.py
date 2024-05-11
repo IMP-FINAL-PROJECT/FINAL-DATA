@@ -1,15 +1,15 @@
 from datetime import datetime, time
-from data_classification import classify_data_by_id, get_custom_date_and_category, process_data_point
-from summary_calculation import calculate_averages
-from excel_data_loader import get_sunrise_sunset, round_up_time
-from gps_data_map import create_and_save_map
+from Data_Manage.data_classification import classify_data_by_id, get_custom_date_and_category, process_data_point
+from .summary_calculation import calculate_averages
+from Utile.excel_data_loader import get_sunrise_sunset, round_up_time
+from GPS_Data_Processing.gps_data_map import create_and_save_map
 from collections import defaultdict
-from gps_data_clustering import perform_dbscan_clustering
-from datainsert import insert_dailylifepattern_data, insert_lastnum
-from gps_data_homestay import homestay_percentage
-from gps_data_save import save_gps_data
-from sample import circadianmovement_main
-from calculate_scores import calculate_scores
+from GPS_Data_Processing.gps_data_clustering import perform_dbscan_clustering
+from Data_Manage.data_insert import insert_dailylifepattern_data, insert_lastnum
+from GPS_Data_Processing.gps_data_homestay import homestay_percentage
+from GPS_Data_Processing.gps_data_save import save_gps_data
+from GPS_Data_Processing.gps_data_circadianmovement import circadianmovement_main
+from Scoring.calculate_scores import calculate_scores
 import field_mappings
 
 
@@ -19,7 +19,7 @@ def classify_and_summarize_data(sensor_data_list):
         'gps': {'count': 0, 'gps': [],'map': '', 'confirm':[], 'cluster':[], 'homestay':0, 'life_routine_consistency':0},
         'daytime': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0, 'call_frequency': 0, 'call_duration': 0},
         'sunset': {'count': 0, 'illuminance_sum': 0, 'illuminance_avg': 0, 'pedometer': 0, 'screen_frequency': 0, 'screen_duration': 0, 'call_frequency': 0, 'call_duration': 0,'sleeptime_screen_duration':0,'sleeptime_screen_duration_count':0},
-        'score': {'activity_score': 0, 'phone_usage_frequency_score': 0, 'phone_usage_duration_score': 0, 'call_duration_score': 0, 'illumination_exposure_score': 0, 'location_diversity_score': 0, 'homestay_score': 0,"sleeptime_screen_duration_score" :0}
+        'score': {'activity_score': 0, 'phone_usage_score': 0, 'illumination_exposure_score': 0, 'location_diversity_score': 0, 'circadian_rhythm_score': 0}
     }))
 
     for id, data_list in data_by_id.items():

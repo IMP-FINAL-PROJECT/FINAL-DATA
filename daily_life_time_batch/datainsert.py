@@ -1,4 +1,4 @@
-import mysqlconnect
+import DB_Connection.mysqlconnect as mysqlconnect
 from datetime import datetime
 
 def insert_dailylifepattern_data(data):
@@ -34,13 +34,10 @@ def insert_dailylifepattern_data(data):
             life_routine_consistency= periods['gps']['life_routine_consistency']  # 실제 데이터 구조에 맞게 조정
             hour_index = str(periods['gps']['confirm'])  # 실제 데이터 구조에 맞게 조정
             activity_score = periods['score']['activity_score']
-            phone_usage_frequency_score = periods['score']['phone_usage_frequency_score']
-            phone_usage_duration_score = periods['score']['phone_usage_duration_score']
-            call_duration_score = periods['score']['call_duration_score']
+            phone_usage_score = periods['score']['phone_usage_score']
             illumination_exposure_score = periods['score']['illumination_exposure_score']
             location_diversity_score =  periods['score']['location_diversity_score']
-            homestay_score= periods['score']['homestay_score']
-            sleeptime_screen_duration_score= periods['score']['sleeptime_screen_duration_score']
+            circadian_rhythm_score= periods['score']['circadian_rhythm_score']
         # 튜플 형태로 values_to_insert 리스트에 추가
         # 아래 예시는 각 컬럼에 대응하는 값의 순서와 갯수가 맞지 않을 수 있으므로, 실제 데이터베이스 구조에 맞게 조정 필요
             values_to_insert.append((
@@ -62,13 +59,10 @@ def insert_dailylifepattern_data(data):
                 daytime_pedometer, 
                 sunset_pedometer,
                 activity_score,
-                phone_usage_frequency_score,
-                phone_usage_duration_score,
-                call_duration_score,
+                phone_usage_score,
                 illumination_exposure_score,
                 location_diversity_score,
-                homestay_score,
-                sleeptime_screen_duration_score,
+                circadian_rhythm_score,
                 daytime_count, 
                 sunset_count, 
                 hour_index,
@@ -94,19 +88,16 @@ def insert_dailylifepattern_data(data):
         day_step_count, 
         night_step_count, 
         activity_score,
-        phone_usage_frequency_score,
-        phone_usage_duration_score,
-        call_duration_score,
+        phone_usage_score,
         illumination_exposure_score,
         location_diversity_score,
-        homestay_score,
-        sleeptime_screen_duration_score,
+        circadian_rhythm_score,
         day_time_count, 
         night_time_count, 
         hour_index, 
         date
         )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     mysqlconnect.executemany_query(insert_query,values_to_insert)
 
