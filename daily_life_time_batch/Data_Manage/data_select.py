@@ -1,4 +1,4 @@
-import mysqlconnect
+import DB_Connection.mysqlconnect as mysqlconnect
 from datetime import timedelta
 
 # 데이터베이스에서 id와 date 조합 쿼리

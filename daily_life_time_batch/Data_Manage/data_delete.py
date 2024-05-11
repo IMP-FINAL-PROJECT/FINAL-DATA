@@ -1,4 +1,4 @@
-import mysqlconnect
+import DB_Connection.mysqlconnect as mysqlconnect
 
 def delete_existing_entries(existing_entries_list):
     """

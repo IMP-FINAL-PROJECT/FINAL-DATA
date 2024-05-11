@@ -1,21 +1,16 @@
-from summary_main import classify_and_summarize_data
-from excel_data_loader import get_sunrise_sunset, round_up_time
-from datadelete import delete_existing_entries
-from mysqlconnect import execute_val_query
-from summary_main import  classify_and_summarize_data
-from datainsert import insert_dailylifepattern_data, insert_lastnum
-from dataselect import query_existing_id_date_combinations
-from data_filter import filter_existing_entries
-from data_fetch import fetch_data_for_sunrise_intervals
-
-
-
-
-import datacall
+from Summary.summary_main import classify_and_summarize_data
+from Utile.excel_data_loader import get_sunrise_sunset, round_up_time
+from Data_Manage.data_delete import delete_existing_entries
+from DB_Connection.mysqlconnect import execute_val_query
+from Data_Manage.data_insert import insert_dailylifepattern_data, insert_lastnum
+from Data_Manage.data_select import query_existing_id_date_combinations
+from Data_Manage.data_filter import filter_existing_entries
+from Data_Manage.data_fetch import fetch_data_for_sunrise_intervals
+from Data_Manage import data_call
 #배치 시작 넘버 조회 
-batch_sensor_data_start_num = datacall.get_latest_start_num()
+batch_sensor_data_start_num = data_call.get_latest_start_num()
 #센서 데이터 조회
-sensor_data_list = datacall.get_sensor_data(batch_sensor_data_start_num)
+sensor_data_list = data_call.get_sensor_data(batch_sensor_data_start_num)
 #이미 존재하는 id와 date 쌍 조회
 last_batch_num=sensor_data_list[-1][0]
 existing_combinations = query_existing_id_date_combinations()
