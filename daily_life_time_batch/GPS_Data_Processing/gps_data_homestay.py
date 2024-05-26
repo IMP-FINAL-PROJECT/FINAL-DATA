@@ -39,7 +39,7 @@ def homestay_percentage(id, clustering_results):
     if result and result[0]:  # result가 비어있지 않고, result의 첫 번째 요소도 비어있지 않을 때
         gps_data_str = result[0][0]  # 문자열 데이터 추출
         gps_data = literal_eval(gps_data_str)  # 문자열을 리스트로 변환
-        
+        print(id)
         # 예시 위도 경도 (집의 위도, 경도)
         home_lat, home_lon = gps_data
         

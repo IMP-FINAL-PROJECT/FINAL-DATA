@@ -33,6 +33,7 @@ def insert_dailylifepattern_data(data):
             home_stay_percentage = periods['gps']['homestay']  # 실제 데이터 구조에 맞게 조정
             life_routine_consistency= periods['gps']['life_routine_consistency']  # 실제 데이터 구조에 맞게 조정
             hour_index = str(periods['gps']['confirm'])  # 실제 데이터 구조에 맞게 조정
+            print(id,date,hour_index)
             activity_score = periods['score']['activity_score']
             phone_usage_score = periods['score']['phone_usage_score']
             illumination_exposure_score = periods['score']['illumination_exposure_score']

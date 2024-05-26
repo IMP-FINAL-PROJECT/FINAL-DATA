@@ -156,6 +156,7 @@ def circadianmovement_main(base_date, id):
     # Normalize the data
     latitude = (latitude - latitude.mean())
     longitude = (longitude - longitude.mean())
+    print(latitude)
 
     # Calculate frequency domain
     freq = np.linspace(0.01, 10, 1000)
@@ -163,10 +164,10 @@ def circadianmovement_main(base_date, id):
     pgram_longitude = lombscargle(time, longitude, freq, normalize=True)
 
     #엑셀로 데이터 확인 합니다.
-   #save_to_excel(combined_data, 'combined_data.xlsx')
+    #save_to_excel(combined_data, f'{id}_{base_date}_combined_data.xlsx')
     
     # # 그래프를 그립니다.
-    # plot_circadian_movement(time, latitude, longitude, pgram_latitude, pgram_longitude)
+    #plot_circadian_movement(time, latitude, longitude, pgram_latitude, pgram_longitude)
 
 
     ecm_latitude = compute_ECM(pgram_latitude)
@@ -189,10 +190,6 @@ def circadianmovement_main(base_date, id):
     score_ecm=score_circadianmovement(average_ecm)
     return score_ecm
 
-# #Example usage:
-# result = circadianmovement_main('2024-04-24', 'joowon@naver.com')
-# if result != 0:
-#     print(result)
 
 def score_circadianmovement(average_ecm):
     if np.isnan(average_ecm):
@@ -200,3 +197,9 @@ def score_circadianmovement(average_ecm):
     average_ecm = min(average_ecm, 10)
     score_ecm=10*average_ecm
     return score_ecm
+
+
+#Example usage:
+result = circadianmovement_main('2024-04-24', 'joowon@naver.com')
+if result != 0:
+    print(result)
