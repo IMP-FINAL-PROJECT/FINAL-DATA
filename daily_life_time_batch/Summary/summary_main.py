@@ -1,5 +1,6 @@
 from datetime import datetime, time
-from Data_Manage.data_classification import classify_data_by_id, get_custom_date_and_category, process_data_point
+from Data_Manage.data_classification import classify_data_by_id, classify_category
+from Data_Manage.data_process import process_data_point
 from .summary_calculation import calculate_averages
 from Utile.excel_data_loader import get_sunrise_sunset, round_up_time
 from GPS_Data_Processing.gps_data_map import create_and_save_map
@@ -33,7 +34,7 @@ def classify_and_summarize_data(sensor_data_list):
                 sunset_today_time = datetime.combine(current_date, time(rounded_sunset_today, 0))
                 
                 timestamp = datetime.combine(data[field_mappings.SENSOR_TIMESTAMP_INDEX], time(data[field_mappings.SENSOR_HOUR_INDEX]))
-                custom_date, category = get_custom_date_and_category(timestamp, sunrise_today_time, sunset_today_time, current_date)
+                custom_date, category = classify_category(timestamp, sunrise_today_time, sunset_today_time, current_date)
                 process_data_point(data, summary[id], custom_date, category)
         create_and_save_map(summary[id][custom_date]['gps']['gps'], id, custom_date)
         for date, categories in summary[id].items():

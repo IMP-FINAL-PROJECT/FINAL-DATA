@@ -102,7 +102,7 @@ def excutemany_delete_query(query,val_list):
             for id, date in val_list:
                 # DELETE 쿼리 실행
                 cursor.execute(query, (id, date))
-            
+                print(query)
             # 변경 사항 저장
             conn.commit()
 
